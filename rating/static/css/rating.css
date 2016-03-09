@@ -10,10 +10,20 @@
 .rating .thankyou {
     color: green;
 }
+.rating .thankyou p#your-choice {
+    margin-bottom: 0;
+}
+.rating .thankyou p + p {
+    margin-top:0;
+}
 
 .rating .error {
     color: darkred;
     display: none;
+}
+
+.rating p {
+    text-align: center;
 }
 
 .rating .prompt {
@@ -72,16 +82,22 @@
 
 .rating input[type="radio"]:checked + span{
    background-color:yellow;
+    border-style: solid;
+    border-width: 1px;
 }
 
 .rating input[type="radio"]:focus + span{
     border-style: solid;
     border-width: 2px;
-    border-color: #999999;
-    border-radius: 12px;
 }
 .rating input + span {
     display: inline-block;
+    font-size: 30px;
+    height: 27px;
+    width: 33px;
+    padding: 6px 0 0 3px;
+    border-radius: 5px;
+    border-color: #999999;
 }
 
 .rating .submit {

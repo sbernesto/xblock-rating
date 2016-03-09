@@ -43,6 +43,12 @@ class RatingXBlock(XBlock):
         help="Random number generated for p. -1 if uninitialized"
     )
 
+    show_textarea = Integer(
+        default=1,
+        scope=Scope.settings,
+        help="Option for whether to show text feedback. 1=Yes / 0=No"
+    )
+
     user_rating = Integer(
         default=-1,
         scope=Scope.user_state,
@@ -113,7 +119,11 @@ class RatingXBlock(XBlock):
 
         # Now, we render the RateXBlock. This may be redundant, since we
         # don't always show it.
-        html = self.resource_string("static/html/rating.html")
+        html = self.resource_string("static/html/rating0.html")
+        if self.show_textarea == 1:
+            html += self.resource_string("static/html/rating1.html")
+        html += self.resource_string("static/html/rating2.html")
+
         # The replace allows us to format the HTML nicely without getting
         # extra whitespace
         scale_item = self.resource_string("static/html/scale_item.html").replace('\n', '')
@@ -129,7 +139,8 @@ class RatingXBlock(XBlock):
                                scale=scale,
                                text_prompt=prompt['text'],
                                rating_prompt=prompt['rating'],
-                               response=response)
+                               response=response,
+                               rating=self.user_rating)
 
         # We initialize self.p_user if not initialized -- this sets whether
         # or not we show it. From there, if it is less than odds of showing,
@@ -155,16 +166,15 @@ class RatingXBlock(XBlock):
         Create a fragment used to display the edit view in the Studio.
         """
         html_str = self.resource_string("static/html/studio_view.html")
-        prompt = self.get_prompt(self.prompt_choice)
-        prompt['title'] = self.display_name
-        frag = Fragment(unicode(html_str).format(**prompt))
+        options = self.get_prompt(self.prompt_choice)
+        options['title'] = self.display_name
+        options['show_textarea'] = self.show_textarea
+        frag = Fragment(unicode(html_str).format(**options))
         js_str = self.resource_string("static/js/src/studio.js")
         frag.add_javascript(unicode(js_str))
         frag.initialize_js('RatingXBlock')
         return frag
 
-    # TO-DO: change this handler to perform your own actions.  You may need more
-    # than one handler, or you may not need any handlers at all.
     @XBlock.json_handler
     def studio_submit(self, data, suffix=''):
         """
@@ -175,6 +185,7 @@ class RatingXBlock(XBlock):
         self.display_name = data.get('title')
         self.prompts[self.prompt_choice]['thankyou'] = data.get('thankyou')
         self.prompts[self.prompt_choice]['error'] = data.get('error')
+        self.show_textarea = data.get('show_textarea')
         return {'result': 'success'}
 
     def handle_rating(self, data):

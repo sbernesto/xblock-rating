@@ -8,8 +8,19 @@
       </div>
       <span class="tip setting-help">Example: Rating Block</span>
     </li>
-
+    
     <li class="field comp-setting-entry is-set">
+      <div class="wrapper-comp-setting">
+        <label class="label setting-label" for="show_textarea">Accept Text Response</label>
+        <select class="input setting-input" id="show_textarea" name="show_textarea" default-value="{show_textarea}">
+          <option value="1">Show</option>
+          <option value="0">Hide</option>
+        </select>
+      </div>
+      <span class="tip setting-help">Allow students to provide text feedback. If set to false, Text Prompt will be ignored.</span>
+    </li>
+
+    <li class="field comp-setting-entry is-set hide-toggle">
       <div class="wrapper-comp-setting">
         <label class="label setting-label" for="text">Text Prompt</label>
         <input class="input setting-input" name="text" id="text" value="{text}" type="text" />

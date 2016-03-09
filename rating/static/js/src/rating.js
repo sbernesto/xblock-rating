@@ -10,7 +10,6 @@ if (typeof Logger === 'undefined') {
 		}
 	};
 }
-
 function RatingXBlock(runtime, element) {
 	var feedback_handler = runtime.handlerUrl(element, 'feedback');
 	$(".rating .submit", element).click(function(eventObject) {
@@ -41,4 +40,10 @@ function RatingXBlock(runtime, element) {
 			}
 		});
 	});
+
+	if( $(element).find('#your-choice').attr('read-value') < 0) {
+		$(element).find('#your-choice').hide();
+	} else {
+		$(element).find('#your-choice').show();
+	}
 }
