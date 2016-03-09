@@ -11,39 +11,34 @@ if (typeof Logger === 'undefined') {
 	};
 }
 
-
 function RatingXBlock(runtime, element) {
 	var feedback_handler = runtime.handlerUrl(element, 'feedback');
 	$(".rating .submit", element).click(function(eventObject) {
 		var text = $(".rating .textarea", element).val();
-		var rating = 0;
-		if ($(".rating_radio:checked", element).length === 0) {
-			rating = -1;
-		} else {
+		var rating = -1;
+		if ($(".rating_radio:checked", element).length > 0) {
 			rating = parseInt($(".rating_radio:checked", element).attr("id").split("_")[1]);
 		}
-		var feedback = {"text": text, 
-		"rating": rating};
+		var feedback = {};
+		if(rating > -1) feedback['rating'] = rating;
+		if(text) feedback['text'] = text;
 		Logger.log("edx.ratingxblock.submit", feedback);
+
 		$.ajax({
 			type: "POST",
 			url: feedback_handler,
-			data: JSON.stringify(feedback),
-			success: function(data) {$('.rating .thankyou', element).text(data.response);}
+			data: JSON.stringify(feedback)
+		})
+		.done(function(data) {
+			if(data.success) {
+				$('.rating .thankyou', element).show();
+				$('.rating .thankyou', element).text(data.response);
+				$('.rating .error', element).hide();
+			} else {
+				$('.rating .error', element).show();
+				$('.rating .error', element).text(data.response);
+				$('.rating .thankyou', element).hide();
+			}
 		});
 	});
-
-	/**
-
-	$('.rating_radio', element).change(function(eventObject) {
-		var target_id = eventObject.target.id;
-		var rating = parseInt(target_id.split('_')[1]);
-		Logger.log("edx.ratingxblock.rating", {"rating":rating});
-	});
-
-	$('.rating_text_area', element).change(function(eventObject) {
-		var text = eventObject.currentTarget.value;
-		Logger.log("edx.ratingxblock.text", {"text":text});
-	});
-    **/
 }

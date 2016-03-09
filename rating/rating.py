@@ -26,46 +26,57 @@ class RatingXBlock(XBlock):
     # exposed in the UX. If the prompt is missing any portions, we
     # will default to the ones in default_prompt.
     prompts = List(
-        default=[{'text': "Please provide us feedback on this section",
-                  'rating': "Please rate your overall experience with this section"}],
+        default=[{
+        'text': "Please provide us feedback on this section",
+        'rating': "Please rate your overall experience with this section",
+        'thankyou': "Thank you for providing feedback",
+        'error': "Please fill in some feedback before submitting!"
+        }],
         scope=Scope.settings,
         help="Input text feedback here",
         xml_node=True
     )   
 
     prompt_choice = Integer(
-        default=-1, scope=Scope.user_state,
+        default=-1,
+        scope=Scope.user_info,
         help="Random number generated for p. -1 if uninitialized"
     )
 
     user_rating = Integer(
-        default=-1, scope=Scope.user_state,
+        default=-1,
+        scope=Scope.user_state,
         help="How user voted. -1 if didn't vote"
     )   
 
     p = Float(
-        default=100, scope=Scope.settings,
+        default=100,
+        scope=Scope.settings,
         help="What percent of the time should this show?"
     )   
 
     p_user = Float(
-        default=-1, scope=Scope.user_state,
+        default=-1,
+        scope=Scope.user_info,
         help="Random number generated for p. -1 if uninitialized"
-    )   
+    )
 
     rating_aggregate = List(
-        default=None, scope=Scope.user_state_summary,
+        default=None,
+        scope=Scope.user_state_summary,
         help="A list of user votes"
-    )   
+    )
 
-    user_text = String(default="", scope=Scope.user_state,
-                           help="Feedback")
+    user_text = String(
+        default="", 
+        scope=Scope.user_state,
+        help="Feedback")
 
     display_name = String(
         display_name = "Display Name",
         default="Rating With Text Feedback",
-        scopde=Scope.settings
-    )  
+        scope=Scope.settings
+    )
 
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
@@ -81,8 +92,8 @@ class RatingXBlock(XBlock):
         _ = self.runtime.service(self, 'i18n').ugettext
         prompt = {'text': _("Please provide us feedback on this section."),
                   'rating': _("Please rate your overall experience with this section."),
-                  'mouseovers': [_("Excellent"), _("Good"), _("Average"), _("Fair"), _("Poor")],
-                  'icons': [u"😁", u"😊", u"😐", u"😞", u"😭"]}
+                  'mouseovers': [_("Poor"), _("Fair"), _("Average"), _("Good"), _("Excellent")],
+                  'icons': [u"😭", u"😞", u"😐", u"😊", u"😁"]}
 
         prompt.update(self.prompts[index])
         return prompt
@@ -109,11 +120,11 @@ class RatingXBlock(XBlock):
         indexes = range(len(prompt['icons']))
         active_vote = ["checked" if i == self.user_rating else "" for i in indexes]
         scale = u"".join(scale_item.format(level=level, icon=icon, i=i, active=active) for (level, icon, i, active) in zip(prompt['mouseovers'], prompt['icons'], indexes, active_vote))
-        if self.user_rating != -1:
+        response = ""
+        if self.user_rating > -1 or self.user_text:
             _ = self.runtime.service(self, 'i18n').ugettext
-            response = _("Thank you for voting!")
-        else:
-            response = ""
+            response = _(prompt['thankyou'])
+
         rendered = html.format(self=self,
                                scale=scale,
                                text_prompt=prompt['text'],
@@ -144,7 +155,8 @@ class RatingXBlock(XBlock):
         Create a fragment used to display the edit view in the Studio.
         """
         html_str = self.resource_string("static/html/studio_view.html")
-        prompt = self.get_prompt(0)
+        prompt = self.get_prompt(self.prompt_choice)
+        prompt['title'] = self.display_name
         frag = Fragment(unicode(html_str).format(**prompt))
         js_str = self.resource_string("static/js/src/studio.js")
         frag.add_javascript(unicode(js_str))
@@ -158,11 +170,14 @@ class RatingXBlock(XBlock):
         """
         Called when submitting the form in Studio.
         """
-        self.prompts[0]['text'] = data.get('text')
-        self.prompts[0]['rating'] = data.get('rating')
+        self.prompts[self.prompt_choice]['text'] = data.get('text')
+        self.prompts[self.prompt_choice]['rating'] = data.get('rating')
+        self.display_name = data.get('title')
+        self.prompts[self.prompt_choice]['thankyou'] = data.get('thankyou')
+        self.prompts[self.prompt_choice]['error'] = data.get('error')
         return {'result': 'success'}
 
-    def vote(self, data):
+    def handle_rating(self, data):
         """
         Handle voting
         """
@@ -178,19 +193,26 @@ class RatingXBlock(XBlock):
         if self.user_rating != -1:
             self.rating_aggregate[self.user_rating] -= 1
 
-        self.user_rating = data['vote']
+        self.user_rating = data['rating']
         self.rating_aggregate[self.user_rating] += 1
 
     @XBlock.json_handler
     def feedback(self, data, suffix=''):
+        valid = False
         if 'text' in data:
             #tracker.emit('edx.ratingxblock.text_feedback',{'old_text': self.user_text,'new_text': data['text']})
             self.user_text = data['text']
+            valid = True
         if 'rating' in data: 
             #tracker.emit('edx.ratexblock.rating',{'old_vote': self.user_rating,'new_vote': data['vote']})
-            self.vote(data)
+            self.handle_rating(data)
+            valid = True
+
         _ = self.runtime.service(self, 'i18n').ugettext
-        return {"success": True, "response": _("Thank you!")}
+        if valid:
+            return {"success": True, "response": _(self.get_prompt(self.prompt_choice)['thankyou'])}
+        else:
+            return {"success": False, "response": _(self.get_prompt(self.prompt_choice)['error'])}
 
     # TO-DO: change this to create the scenarios you'd like to see in the
     # workbench while developing your XBlock.

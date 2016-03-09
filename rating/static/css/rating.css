@@ -2,9 +2,7 @@
 
 .rating {
     text-align: center;
-    max-width: 400px;
     border-width: 1px;
-    border-style: solid;
     border-color: rgba(0,0,0,0.1);
     padding: 10px
 }
@@ -13,15 +11,21 @@
     color: green;
 }
 
+.rating .error {
+    color: darkred;
+    display: none;
+}
+
 .rating .prompt {
     font-weight: bold;
     font-size: large;
     background: transparent;
 }
 
-.rating .field {
+.rating .scale {
     cursor: pointer;
     border-radius:5px;
+    margin: 10px 0;
 }
 
 .rating .text_wrapper {
@@ -30,6 +34,7 @@
 
 .rating .textarea {
     height:inherit;
+    width: 100%;
 }
 
 .rating .rating_active {
@@ -67,15 +72,18 @@
 
 .rating input[type="radio"]:checked + span{
    background-color:yellow;
-   font-weight:bold;
 }
 
 .rating input[type="radio"]:focus + span{
-   border-style:solid;
-   border-width: 1px;
-   border-color: #999999;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #999999;
+    border-radius: 12px;
+}
+.rating input + span {
+    display: inline-block;
 }
 
 .rating .submit {
-    width:100%;
+    max-width:100%;
 }

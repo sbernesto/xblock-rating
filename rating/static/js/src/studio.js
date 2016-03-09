@@ -3,7 +3,10 @@ function RatingXBlock(runtime, element) {
     var handlerUrl = runtime.handlerUrl(element, 'studio_submit');
     var data = {
       rating: $(element).find('input[name=rating]').val(),
-      text: $(element).find('input[name=text]').val()
+      text: $(element).find('input[name=text]').val(),
+      title: $(element).find('input[name=title]').val(),
+      thankyou: $(element).find('input[name=thankyou]').val(),
+      error: $(element).find('input[name=error]').val()
     };
     runtime.notify('save', {state: 'start'});
     $.post(handlerUrl, JSON.stringify(data)).done(function(response) {
