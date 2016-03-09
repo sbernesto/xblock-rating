@@ -1,0 +1,81 @@
+/* CSS for RatingXBlock */
+
+.rating {
+    text-align: center;
+    max-width: 400px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(0,0,0,0.1);
+    padding: 10px
+}
+
+.rating .thankyou {
+    color: green;
+}
+
+.rating .prompt {
+    font-weight: bold;
+    font-size: large;
+    background: transparent;
+}
+
+.rating .field {
+    cursor: pointer;
+    border-radius:5px;
+}
+
+.rating .text_wrapper {
+    margin-bottom: 1em;
+}
+
+.rating .textarea {
+    height:inherit;
+}
+
+.rating .rating_active {
+    color: blue;
+    font-weight: bold;
+    background-color: blanchedalmond;
+}
+
+.rating .rating_radio {
+    opacity:0;
+    width:1px;
+    padding:0;
+    margin:0;
+}
+
+.rating .rating_help{
+    opacity:0;
+    width:1px;
+    height:1px;
+    padding:0;
+    margin:0;
+    position:absolute;
+    clip:rect(1px,1px,1px,1px);
+    left:-10000px;
+    overflow:hidden;
+}
+
+.rating label{
+    display:inline;
+}
+
+.rating .field {
+    border-style:none;
+}
+
+.rating input[type="radio"]:checked + span{
+   background-color:yellow;
+   font-weight:bold;
+}
+
+.rating input[type="radio"]:focus + span{
+   border-style:solid;
+   border-width: 1px;
+   border-color: #999999;
+}
+
+.rating .submit {
+    width:100%;
+}

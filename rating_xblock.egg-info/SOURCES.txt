@@ -1,0 +1,12 @@
+rating/__init__.py
+rating/rating.py
+rating/static/README.txt
+rating/static/css/rating.css
+rating/static/html/rating.html
+rating/static/js/src/rating.js
+rating_xblock.egg-info/PKG-INFO
+rating_xblock.egg-info/SOURCES.txt
+rating_xblock.egg-info/dependency_links.txt
+rating_xblock.egg-info/entry_points.txt
+rating_xblock.egg-info/requires.txt
+rating_xblock.egg-info/top_level.txt
