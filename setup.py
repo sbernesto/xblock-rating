@@ -1,4 +1,4 @@
-"""Setup for rating XBlock."""
+"""Setup for rate XBlock."""
 
 import os
 from setuptools import setup
@@ -21,19 +21,19 @@ def package_data(pkg, roots):
 
 
 setup(
-    name='rating-xblock',
+    name='rate-xblock',
     version='0.1',
-    description='rating XBlock',   # TODO: write a better description.
+    description='rate XBlock',   # TODO: write a better description.
     packages=[
-        'rating',
+        'rate',
     ],
     install_requires=[
         'XBlock',
     ],
     entry_points={
         'xblock.v1': [
-            'rating = rating:RatingXBlock',
+            'rate = rate:RatingXBlock',
         ]
     },
-    package_data=package_data("rating", ["static", "public"]),
+    package_data=package_data("rate", ["static", "public"]),
 )
