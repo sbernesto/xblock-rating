@@ -49,7 +49,7 @@ class RatingXBlock(XBlock):
         help="Option for whether to show text feedback. 1=Yes / 0=No"
     )
 
-    user_rating = Integer(
+    user_vote = Integer(
         default=-1,
         scope=Scope.user_state,
         help="How user voted. -1 if didn't vote"
@@ -73,7 +73,7 @@ class RatingXBlock(XBlock):
         help="A list of user votes"
     )
 
-    user_text = String(
+    user_freeform = String(
         default="", 
         scope=Scope.user_state,
         help="Feedback")
@@ -99,7 +99,7 @@ class RatingXBlock(XBlock):
         prompt = {'text': _("Please provide us feedback on this section."),
                   'rating': _("Please rate your overall experience with this section."),
                   'mouseovers': [_("Poor"), _("Fair"), _("Average"), _("Good"), _("Excellent")],
-                  'icons': [u"😭", u"😞", u"😐", u"😊", u"😁"]}
+                  'icons': [u"😁",u"😊",u"😐",u"😞",u"😭"]}
 
         prompt.update(self.prompts[index])
         return prompt
@@ -128,10 +128,10 @@ class RatingXBlock(XBlock):
         # extra whitespace
         scale_item = self.resource_string("static/html/scale_item.html").replace('\n', '')
         indexes = range(len(prompt['icons']))
-        active_vote = ["checked" if i == self.user_rating else "" for i in indexes]
+        active_vote = ["checked" if i == self.user_vote else "" for i in indexes]
         scale = u"".join(scale_item.format(level=level, icon=icon, i=i, active=active) for (level, icon, i, active) in zip(prompt['mouseovers'], prompt['icons'], indexes, active_vote))
         response = ""
-        if self.user_rating > -1 or self.user_text:
+        if self.user_vote > -1 or self.user_freeform:
             _ = self.runtime.service(self, 'i18n').ugettext
             response = _(prompt['thankyou'])
 
@@ -140,7 +140,7 @@ class RatingXBlock(XBlock):
                                text_prompt=prompt['text'],
                                rating_prompt=prompt['rating'],
                                response=response,
-                               rating=self.user_rating)
+                               rating=self.user_vote)
 
         # We initialize self.p_user if not initialized -- this sets whether
         # or not we show it. From there, if it is less than odds of showing,
@@ -201,21 +201,21 @@ class RatingXBlock(XBlock):
             self.rating_aggregate = [0] * len(prompt['mouseovers'])
 
         # Remove old vote if we voted before
-        if self.user_rating != -1:
-            self.rating_aggregate[self.user_rating] -= 1
+        if self.user_vote != -1:
+            self.rating_aggregate[self.user_vote] -= 1
 
-        self.user_rating = data['rating']
-        self.rating_aggregate[self.user_rating] += 1
+        self.user_vote = data['rating']
+        self.rating_aggregate[self.user_vote] += 1
 
     @XBlock.json_handler
     def feedback(self, data, suffix=''):
         valid = False
         if 'text' in data:
-            #tracker.emit('edx.ratingxblock.text_feedback',{'old_text': self.user_text,'new_text': data['text']})
-            self.user_text = data['text']
+            #tracker.emit('edx.ratingxblock.text_feedback',{'old_text': self.user_freeform,'new_text': data['text']})
+            self.user_freeform = data['text']
             valid = True
         if 'rating' in data: 
-            #tracker.emit('edx.ratexblock.rating',{'old_vote': self.user_rating,'new_vote': data['vote']})
+            #tracker.emit('edx.ratexblock.rating',{'old_vote': self.user_vote,'new_vote': data['vote']})
             self.handle_rating(data)
             valid = True
 
