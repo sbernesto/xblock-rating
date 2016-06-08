@@ -98,7 +98,7 @@ class RatingXBlock(XBlock):
         _ = self.runtime.service(self, 'i18n').ugettext
         prompt = {'text': _("Please provide us feedback on this section."),
                   'rating': _("Please rate your overall experience with this section."),
-                  'mouseovers': [_("Poor"), _("Fair"), _("Average"), _("Good"), _("Excellent")],
+                  'mouseovers': [_("Excellent"), _("Good"), _("Average"), _("Fair"), _("Poor")],
                   'icons': [u"😁",u"😊",u"😐",u"😞",u"😭"]}
 
         prompt.update(self.prompts[index])
