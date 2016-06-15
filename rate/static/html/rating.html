@@ -1,0 +1,21 @@
+<div class="rating">
+    <form action="" onsubmit="return false;">
+
+        {% if show_textarea == 1 %}
+        <div class="text_wrapper">
+            <label class="prompt" for="rating_text">{text_prompt}</label>
+            <textarea id="rating_text" class="textarea" rows="4" cols="100">{self.user_freeform}</textarea>
+        </div>
+        {% endif %}
+
+        <fieldset class="field">
+            <legend class="prompt">{rating_prompt}</legend>
+            <div class="scale">{scale}</div>
+        </fieldset>
+        <div class="thankyou" aria-live=polite><p style="display:none;" id="your-choice" read-value="{rating}">${_("Your
+            rating: ")}{rating}</p>
+            <p>{response}</p></div>
+        <div class="error" aria-live=polite></div>
+        <button type="submit" class="submit">${_("Submit")}</button>
+    </form>
+</div>

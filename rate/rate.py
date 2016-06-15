@@ -3,16 +3,15 @@
 Providing feedback and rating.
 This can be put anywhere inside a course. Multiple rating at same page is also allowed.
 """
-
-import pkg_resources, random
-
+import random
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String, List, Float
 from xblock.fragment import Fragment
 from eventtracking import tracker
+from .utils import *
+
 
 @XBlock.needs('i18n')
-
 class RatingXBlock(XBlock):
     """
     An XBlock for collecting rating and feedback from students
@@ -27,15 +26,15 @@ class RatingXBlock(XBlock):
     # will default to the ones in default_prompt.
     prompts = List(
         default=[{
-        'text': "Please provide us feedback on this section",
-        'rating': "Please rate your overall experience with this section",
-        'thankyou': "Thank you for providing feedback",
-        'error': "Please fill in some feedback before submitting!"
+            'text': "Please provide us feedback on this section",
+            'rating': "Please rate your overall experience with this section",
+            'thankyou': "Thank you for providing feedback",
+            'error': "Please fill in some feedback before submitting!"
         }],
         scope=Scope.settings,
         help="Input text feedback here",
         xml_node=True
-    )   
+    )
 
     prompt_choice = Integer(
         default=-1,
@@ -53,13 +52,13 @@ class RatingXBlock(XBlock):
         default=-1,
         scope=Scope.user_state,
         help="How user voted. -1 if didn't vote"
-    )   
+    )
 
     p = Float(
         default=100,
         scope=Scope.settings,
         help="What percent of the time should this show?"
-    )   
+    )
 
     p_user = Float(
         default=-1,
@@ -74,20 +73,15 @@ class RatingXBlock(XBlock):
     )
 
     user_freeform = String(
-        default="", 
+        default="",
         scope=Scope.user_state,
         help="Feedback")
 
     display_name = String(
-        display_name = "Display Name",
+        display_name="Display Name",
         default="Rating With Text Feedback",
         scope=Scope.settings
     )
-
-    def resource_string(self, path):
-        """Handy helper for getting resources from our kit."""
-        data = pkg_resources.resource_string(__name__, path)
-        return data.decode("utf8")
 
     def get_prompt(self, index):
         """ 
@@ -99,7 +93,7 @@ class RatingXBlock(XBlock):
         prompt = {'text': _("Please provide us feedback on this section."),
                   'rating': _("Please rate your overall experience with this section."),
                   'mouseovers': [_("Excellent"), _("Good"), _("Average"), _("Fair"), _("Poor")],
-                  'icons': [u"😁",u"😊",u"😐",u"😞",u"😭"]}
+                  'icons': [u"😁", u"😊", u"😐", u"😞", u"😭"]}
 
         prompt.update(self.prompts[index])
         return prompt
@@ -109,6 +103,7 @@ class RatingXBlock(XBlock):
         The primary view of the RatingXBlock, shown to students
         when viewing courses.
         """
+        _ = self.runtime.service(self, 'i18n').ugettext
         # Figure out which prompt we show. We set self.prompt_choice to
         # the index of the prompt. We set it if it is out of range (either
         # uninitiailized, or incorrect due to changing list length). Then,
@@ -117,30 +112,26 @@ class RatingXBlock(XBlock):
             self.prompt_choice = random.randint(0, len(self.prompts) - 1)
         prompt = self.get_prompt(self.prompt_choice)
 
-        # Now, we render the RateXBlock. This may be redundant, since we
-        # don't always show it.
-        html = self.resource_string("static/html/rating0.html")
-        if self.show_textarea == 1:
-            html += self.resource_string("static/html/rating1.html")
-        html += self.resource_string("static/html/rating2.html")
-
         # The replace allows us to format the HTML nicely without getting
         # extra whitespace
-        scale_item = self.resource_string("static/html/scale_item.html").replace('\n', '')
+        scale_item = load_resource("static/html/scale_item.html").replace('\n', '')
         indexes = range(len(prompt['icons']))
         active_vote = ["checked" if i == self.user_vote else "" for i in indexes]
-        scale = u"".join(scale_item.format(level=level, icon=icon, i=i, active=active) for (level, icon, i, active) in zip(prompt['mouseovers'], prompt['icons'], indexes, active_vote))
+        scale = u"".join(scale_item.format(level=level, icon=icon, i=i, active=active) for (level, icon, i, active) in
+                         zip(prompt['mouseovers'], prompt['icons'], indexes, active_vote))
         response = ""
         if self.user_vote > -1 or self.user_freeform:
-            _ = self.runtime.service(self, 'i18n').ugettext
             response = _(prompt['thankyou'])
 
-        rendered = html.format(self=self,
-                               scale=scale,
-                               text_prompt=prompt['text'],
-                               rating_prompt=prompt['rating'],
-                               response=response,
-                               rating=self.user_vote)
+        context = {
+            'self': self,
+            'scale': scale,
+            'text_prompt': prompt['text'],
+            'rating_prompt': prompt['rating'],
+            'response': response,
+            'rating': self.user_vote,
+            'show_textarea': self.show_textarea
+        }
 
         # We initialize self.p_user if not initialized -- this sets whether
         # or not we show it. From there, if it is less than odds of showing,
@@ -149,15 +140,13 @@ class RatingXBlock(XBlock):
         # doesn't support that.
         if self.p_user == -1:
             self.p_user = random.uniform(0, 100)
-        if self.p_user < self.p:
-            frag = Fragment(rendered)
-        else:
-            frag = Fragment(u"")
+        frag = Fragment(u"")
 
+        frag.add_content(render_template('static/html/rating.html', context))
         # Finally, we do the standard JS+CSS boilerplate. Honestly, XBlocks
         # ought to have a sane default here.
-        frag.add_css(self.resource_string("static/css/rating.css"))
-        frag.add_javascript(self.resource_string("static/js/src/rating.js"))
+        frag.add_css(load_resource("static/css/rating.css"))
+        frag.add_javascript(load_resource("static/js/src/rating.js"))
         frag.initialize_js('RatingXBlock')
         return frag
 
@@ -165,12 +154,12 @@ class RatingXBlock(XBlock):
         """
         Create a fragment used to display the edit view in the Studio.
         """
-        html_str = self.resource_string("static/html/studio_view.html")
+        html_str = load_resource("static/html/studio_view.html")
         options = self.get_prompt(self.prompt_choice)
         options['title'] = self.display_name
         options['show_textarea'] = self.show_textarea
         frag = Fragment(unicode(html_str).format(**options))
-        js_str = self.resource_string("static/js/src/studio.js")
+        js_str = load_resource("static/js/src/studio.js")
         frag.add_javascript(unicode(js_str))
         frag.initialize_js('RatingXBlock')
         return frag
@@ -211,11 +200,11 @@ class RatingXBlock(XBlock):
     def feedback(self, data, suffix=''):
         valid = False
         if 'text' in data:
-            #tracker.emit('edx.ratingxblock.text_feedback',{'old_text': self.user_freeform,'new_text': data['text']})
+            # tracker.emit('edx.ratingxblock.text_feedback',{'old_text': self.user_freeform,'new_text': data['text']})
             self.user_freeform = data['text']
             valid = True
-        if 'rating' in data: 
-            #tracker.emit('edx.ratexblock.rating',{'old_vote': self.user_vote,'new_vote': data['vote']})
+        if 'rating' in data:
+            # tracker.emit('edx.ratexblock.rating',{'old_vote': self.user_vote,'new_vote': data['vote']})
             self.handle_rating(data)
             valid = True
 
