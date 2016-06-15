@@ -12,12 +12,11 @@
         <fieldset class="field">
             <legend class="prompt">{{rating_prompt}}</legend>
             <div class="scale">
-                <!--{{scale}}-->
-                {% for (level, icon, i, active) in scale_items:
-                <label title="{level}">
-                    <input id="radio_{i}" name="rating_scale" class="rating_radio" type="radio" {active}>
-                    <span aria-hidden="true">{icon}</span>
-                    <span class="rating_help">{level}</span>
+                {% for (level, icon, i, active) in scale_items %}
+                <label title="{{level}}">
+                    <input id="radio_{{i}}" name="rating_scale" class="rating_radio" type="radio" {{active}}>
+                    <span aria-hidden="true">{{icon}}</span>
+                    <span class="rating_help">{{level}}</span>
                 </label>
                 {% endfor %}
             </div>

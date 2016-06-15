@@ -126,7 +126,6 @@ class RatingXBlock(XBlock):
 
         context = {
             'user_freeform': self.user_freeform,
-            # 'scale': scale,
             'text_prompt': prompt['text'],
             'rating_prompt': prompt['rating'],
             'response': response,
