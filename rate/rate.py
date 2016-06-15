@@ -154,11 +154,10 @@ class RatingXBlock(XBlock):
         """
         Create a fragment used to display the edit view in the Studio.
         """
-        html_str = load_resource("static/html/studio_view.html")
         options = self.get_prompt(self.prompt_choice)
         options['title'] = self.display_name
         options['show_textarea'] = self.show_textarea
-        frag = Fragment(unicode(html_str).format(**options))
+        frag = Fragment(render_template("static/html/studio_view.html",options))
         js_str = load_resource("static/js/src/studio.js")
         frag.add_javascript(unicode(js_str))
         frag.initialize_js('RatingXBlock')
