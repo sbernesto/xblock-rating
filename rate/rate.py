@@ -112,25 +112,27 @@ class RatingXBlock(XBlock):
             self.prompt_choice = random.randint(0, len(self.prompts) - 1)
         prompt = self.get_prompt(self.prompt_choice)
 
-        # The replace allows us to format the HTML nicely without getting
-        # extra whitespace
-        scale_item = load_resource("static/html/scale_item.html").replace('\n', '')
         indexes = range(len(prompt['icons']))
         active_vote = ["checked" if i == self.user_vote else "" for i in indexes]
-        scale = u"".join(scale_item.format(level=level, icon=icon, i=i, active=active) for (level, icon, i, active) in
-                         zip(prompt['mouseovers'], prompt['icons'], indexes, active_vote))
+
+        # scale = u"".join(
+        #     render_template("static/html/scale_item.html", {'level': level, 'icon': icon, 'i': i, 'active': active}) for
+        #     (level, icon, i, active) in
+        #     zip(prompt['mouseovers'], prompt['icons'], indexes, active_vote))
+        scale_test = zip(prompt['mouseovers'], prompt['icons'], indexes, active_vote)
         response = ""
         if self.user_vote > -1 or self.user_freeform:
             response = _(prompt['thankyou'])
 
         context = {
-            'self': self,
-            'scale': scale,
+            'user_freeform': self.user_freeform,
+            # 'scale': scale,
             'text_prompt': prompt['text'],
             'rating_prompt': prompt['rating'],
             'response': response,
             'rating': self.user_vote,
-            'show_textarea': self.show_textarea
+            'show_textarea': self.show_textarea,
+            'scale_items': scale_test
         }
 
         # We initialize self.p_user if not initialized -- this sets whether
@@ -157,7 +159,7 @@ class RatingXBlock(XBlock):
         options = self.get_prompt(self.prompt_choice)
         options['title'] = self.display_name
         options['show_textarea'] = self.show_textarea
-        frag = Fragment(render_template("static/html/studio_view.html",options))
+        frag = Fragment(render_template("static/html/studio_view.html", options))
         js_str = load_resource("static/js/src/studio.js")
         frag.add_javascript(unicode(js_str))
         frag.initialize_js('RatingXBlock')
