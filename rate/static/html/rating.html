@@ -4,26 +4,27 @@
 
         {% if show_textarea == 1 %}
         <div class="text_wrapper">
-            <label class="prompt" for="rating_text">{{text_prompt}}</label>
-            <textarea id="rating_text" class="textarea" rows="4" cols="100">{{user_freeform}}</textarea>
+            <label class="prompt" for="rating_text">{{ text_prompt }}</label>
+            <textarea id="rating_text" class="textarea" rows="4" cols="100">{{ user_freeform }}</textarea>
         </div>
         {% endif %}
 
         <fieldset class="field">
             <legend class="prompt">{{rating_prompt}}</legend>
             <div class="scale">
-                {% for (level, icon, i, active) in scale_items %}
-                <label title="{{level}}">
-                    <input id="radio_{{i}}" name="rating_scale" class="rating_radio" type="radio" {{active}}>
-                    <span aria-hidden="true">{{icon}}</span>
-                    <span class="rating_help">{{level}}</span>
-                </label>
+                {# level,icon,i,active #}
+                {% for scale_item in scale_items %}
+                    <label title="{{ scale_item.0 }}">
+                        <input id="radio_{{ scale_item.2 }}" name="rating_scale" class="rating_radio" type="radio" {{ scale_item.3 }}>
+                        <span aria-hidden="true">{{ scale_item.1 }}</span>
+                        <span class="rating_help">{% trans scale_item.0 %}</span>
+                    </label>
                 {% endfor %}
             </div>
 
         </fieldset>
         <div class="thankyou" aria-live=polite><p style="display:none;" id="your-choice" read-value="{{rating}}">
-            {% trans "Your rating: " %}{{rating}}</p>
+            {% trans "Your rating: " %}{{ rating }}</p>
             <p>{{response}}</p></div>
         <div class="error" aria-live=polite></div>
         <button type="submit" class="submit">{% trans "Submit" %}</button>

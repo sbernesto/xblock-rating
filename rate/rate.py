@@ -7,7 +7,7 @@ import random
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String, List, Float
 from xblock.fragment import Fragment
-from eventtracking import tracker
+from eventtracking import tracker as tk
 from .utils import *
 
 
@@ -115,11 +115,7 @@ class RatingXBlock(XBlock):
         indexes = range(len(prompt['icons']))
         active_vote = ["checked" if i == self.user_vote else "" for i in indexes]
 
-        # scale = u"".join(
-        #     render_template("static/html/scale_item.html", {'level': level, 'icon': icon, 'i': i, 'active': active}) for
-        #     (level, icon, i, active) in
-        #     zip(prompt['mouseovers'], prompt['icons'], indexes, active_vote))
-        scale_test = zip(prompt['mouseovers'], prompt['icons'], indexes, active_vote)
+        scale_items = zip(prompt['mouseovers'], prompt['icons'], indexes, active_vote)
         response = ""
         if self.user_vote > -1 or self.user_freeform:
             response = _(prompt['thankyou'])
@@ -131,7 +127,7 @@ class RatingXBlock(XBlock):
             'response': response,
             'rating': self.user_vote,
             'show_textarea': self.show_textarea,
-            'scale_items': scale_test
+            'scale_items': scale_items
         }
 
         # We initialize self.p_user if not initialized -- this sets whether
@@ -158,9 +154,9 @@ class RatingXBlock(XBlock):
         options = self.get_prompt(self.prompt_choice)
         options['title'] = self.display_name
         options['show_textarea'] = self.show_textarea
-        frag = Fragment(render_template("static/html/studio_view.html", options))
-        js_str = load_resource("static/js/src/studio.js")
-        frag.add_javascript(unicode(js_str))
+        frag = Fragment()
+        frag.add_content(render_template("static/html/studio_view.html", options))
+        frag.add_javascript(load_resource("static/js/src/studio.js"))
         frag.initialize_js('RatingXBlock')
         return frag
 
