@@ -31,6 +31,7 @@ function RatingXBlock(runtime, element) {
 		.done(function(data) {
 			if(data.success) {
 				$('.rating .error', element).hide();
+				$('#please_rate', element).hide();
 			} else {
 				$('.rating .error', element).show();
 				$('.rating .error', element).text(data.response);

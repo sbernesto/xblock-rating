@@ -132,15 +132,15 @@ class RatingXBlock(XBlock):
         active_vote = ["checked" if i == self.user_vote else "" for i in indexes]
 
         scale_items = zip(prompt['mouseovers'], prompt['icons'], indexes, active_vote)
-        response = ""
+        rated = False
         if self.user_vote > -1 or self.user_freeform:
-            response = True
+            rated = True
 
         context = {
             'user_freeform': self.user_freeform,
             'text_prompt': prompt['text'],
             'rating_prompt': prompt['rating'],
-            'response': response,
+            'rated': rated,
             'rating': self.user_vote,
             'show_textarea': self.show_textarea,
             'scale_items': scale_items,

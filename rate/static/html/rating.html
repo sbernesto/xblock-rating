@@ -9,7 +9,9 @@
         {% endif %}
 
         <fieldset class="field">
-            <legend class="prompt">{{ rating_prompt }}</legend>
+            {% if not rated %}
+                <legend class="prompt" id="please_rate">{{ rating_prompt }}</legend>
+            {% endif %}
             <div class="scale">
                 {# level,icon,i,active #}
                 {% for scale_item in scale_items %}
