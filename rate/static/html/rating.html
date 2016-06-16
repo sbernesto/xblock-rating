@@ -3,7 +3,9 @@
 
         {% if show_textarea == 1 %}
         <div class="text_wrapper">
-            <label class="prompt" for="rating_text">{{ text_prompt }}</label>
+            {% if not rated %}
+            <label class="prompt" for="rating_text" id="please_type">{{ text_prompt }}</label>
+            {% endif %}
             <textarea id="rating_text" class="textarea" rows="4" cols="100">{{ user_freeform }}</textarea>
         </div>
         {% endif %}

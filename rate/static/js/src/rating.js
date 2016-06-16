@@ -32,6 +32,7 @@ function RatingXBlock(runtime, element) {
 			if(data.success) {
 				$('.rating .error', element).hide();
 				$('#please_rate', element).hide();
+				$('#please_type', element).hide();
 			} else {
 				$('.rating .error', element).show();
 				$('.rating .error', element).text(data.response);
