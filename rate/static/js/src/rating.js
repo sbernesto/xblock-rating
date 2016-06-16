@@ -30,13 +30,10 @@ function RatingXBlock(runtime, element) {
 		})
 		.done(function(data) {
 			if(data.success) {
-				$('.rating .thankyou', element).show();
-				$('.rating .thankyou', element).text(data.response);
 				$('.rating .error', element).hide();
 			} else {
 				$('.rating .error', element).show();
 				$('.rating .error', element).text(data.response);
-				$('.rating .thankyou', element).hide();
 			}
 		});
 	});

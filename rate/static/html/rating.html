@@ -1,5 +1,4 @@
 <div class="rating">
-    <p>Your language is {{ language }}</p>
     <form action="" onsubmit="return false;">
 
         {% if show_textarea == 1 %}
@@ -14,19 +13,23 @@
             <div class="scale">
                 {# level,icon,i,active #}
                 {% for scale_item in scale_items %}
-                    <label title="{{ scale_item.0 }}">
-                        <input id="radio_{{ scale_item.2 }}" name="rating_scale" class="rating_radio" type="radio" {{ scale_item.3 }}>
-                        <span aria-hidden="true">{{ scale_item.1 }}</span>
-                        <span class="rating_help">{{ scale_item.0 }}</span>
-                    </label>
+                <label title="{{ scale_item.0 }}">
+                    <input id="radio_{{ scale_item.2 }}" name="rating_scale" class="rating_radio"
+                           type="radio" {{ scale_item.3 }}>
+                    <span aria-hidden="true">{{ scale_item.1 }}</span>
+                    <span class="rating_help">{{ scale_item.0 }}</span>
+                </label>
                 {% endfor %}
             </div>
 
         </fieldset>
-        <div class="thankyou" aria-live=polite><p style="display:none;" id="your-choice" read-value="{{rating}}">
-            {% "Votre note" if language.split('-')[0] == 'fr' else "Your rating: " %}{{ rating }}</p>
-            <p>{{ response }}</p></div>
         <div class="error" aria-live=polite></div>
-        <button type="submit" class="submit">{% "Soumettre" if language.split('-')[0] == 'fr' else "Submit" %}</button>
+        <button type="submit" class="submit">
+            {% if language == 'fr' %}
+            Soumettre
+            {% else %}
+            Submit
+            {% endif %}
+        </button>
     </form>
 </div>

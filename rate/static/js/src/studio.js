@@ -5,7 +5,6 @@ function RatingXBlock(runtime, element) {
                 rating: $(element).find('input[name=rating]').val(),
                 text: $(element).find('input[name=text]').val(),
                 title: $(element).find('input[name=title]').val(),
-                thankyou: $(element).find('input[name=thankyou]').val(),
                 error: $(element).find('input[name=error]').val(),
                 show_textarea: $(element).find('select[name=show_textarea]').val()
             };

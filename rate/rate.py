@@ -30,7 +30,6 @@ class RatingXBlock(XBlock):
         default=[{
             'text': "Please provide us feedback on this section",
             'rating': "Please rate your overall experience with this section",
-            'thankyou': "Thank you for providing feedback",
             'error': "Please fill in some feedback before submitting!"
         }],
         scope=Scope.settings,
@@ -85,7 +84,6 @@ class RatingXBlock(XBlock):
         scope=Scope.settings
     )
 
-
     def get_prompt(self, index):
         """ 
         Return the current prompt dictionary, doing appropriate
@@ -99,20 +97,18 @@ class RatingXBlock(XBlock):
 
             prompt = {'text': "S'il vous plaît nous fournir des commentaires sur cette section",
                       'rating': "S'il vous plaît noter que votre expérience avec cette section",
-                      'thankyou': "Je vous remercie pour fournir une rétroaction",
                       'error': "S'il vous plaît remplir quelques commentaires avant de soumettre!",
-                      'mouseovers': ["Excellent", "Bon", "Moyen", "Fair", "Pauvres"]}
+                      'mouseovers': ["Excellent", "Bon", "Moyen", "Fair", "Mauvais"]}
 
         else:
             prompt = {'text': "Please provide us feedback on this section.",
                       'rating': "Please rate your overall experience with this section.",
-                      'thankyou': "Thank you for providing feedback",
                       'error': "Please fill in some feedback before submitting!",
                       'mouseovers': ["Excellent", "Good", "Average", "Fair", "Poor"]}
 
         icons = [u"😁", u"😊", u"😐", u"😞", u"😭"]
 
-        # prompt.update(self.prompts[index])
+        prompt.update(self.prompts[index])
         prompt.update({'icons': icons})
         return prompt
 
@@ -122,7 +118,7 @@ class RatingXBlock(XBlock):
         when viewing courses.
         """
         # _ = self.runtime.service(self, 'i18n').ugettext
-        language = translation.get_language()
+        language = translation.get_language().split('-')[0]
 
         # Figure out which prompt we show. We set self.prompt_choice to
         # the index of the prompt. We set it if it is out of range (either
@@ -138,7 +134,7 @@ class RatingXBlock(XBlock):
         scale_items = zip(prompt['mouseovers'], prompt['icons'], indexes, active_vote)
         response = ""
         if self.user_vote > -1 or self.user_freeform:
-            response = prompt['thankyou']
+            response = True
 
         context = {
             'user_freeform': self.user_freeform,
@@ -189,7 +185,6 @@ class RatingXBlock(XBlock):
         self.prompts[self.prompt_choice]['text'] = data.get('text')
         self.prompts[self.prompt_choice]['rating'] = data.get('rating')
         self.display_name = data.get('title')
-        self.prompts[self.prompt_choice]['thankyou'] = data.get('thankyou')
         self.prompts[self.prompt_choice]['error'] = data.get('error')
         self.show_textarea = data.get('show_textarea')
         return {'result': 'success'}
@@ -227,7 +222,7 @@ class RatingXBlock(XBlock):
 
         # _ = self.runtime.service(self, 'i18n').ugettext
         if valid:
-            return {"success": True, "response": self.get_prompt(self.prompt_choice)['thankyou']}
+            return {"success": True}
         else:
             return {"success": False, "response": self.get_prompt(self.prompt_choice)['error']}
 
