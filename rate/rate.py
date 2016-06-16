@@ -10,6 +10,8 @@ from xblock.fragment import Fragment
 from eventtracking import tracker as tk
 from .utils import *
 
+from django.utils import translation
+
 
 @XBlock.needs('i18n')
 class RatingXBlock(XBlock):
@@ -83,19 +85,35 @@ class RatingXBlock(XBlock):
         scope=Scope.settings
     )
 
+
     def get_prompt(self, index):
         """ 
         Return the current prompt dictionary, doing appropriate
         randomization if necessary, and falling back to defaults when
         necessary.
         """
-        _ = self.runtime.service(self, 'i18n').ugettext
-        prompt = {'text': _("Please provide us feedback on this section."),
-                  'rating': _("Please rate your overall experience with this section."),
-                  'mouseovers': [_("Excellent"), _("Good"), _("Average"), _("Fair"), _("Poor")],
-                  'icons': [u"😁", u"😊", u"😐", u"😞", u"😭"]}
+        # _ = self.runtime.service(self, 'i18n').ugettext
+        language = translation.get_language()
 
-        prompt.update(self.prompts[index])
+        if language.split('-')[0] == 'fr':
+
+            prompt = {'text': "S'il vous plaît nous fournir des commentaires sur cette section",
+                      'rating': "S'il vous plaît noter que votre expérience avec cette section",
+                      'thankyou': "Je vous remercie pour fournir une rétroaction",
+                      'error': "S'il vous plaît remplir quelques commentaires avant de soumettre!",
+                      'mouseovers': ["Excellent", "Bon", "Moyen", "Fair", "Pauvres"]}
+
+        else:
+            prompt = {'text': "Please provide us feedback on this section.",
+                      'rating': "Please rate your overall experience with this section.",
+                      'thankyou': "Thank you for providing feedback",
+                      'error': "Please fill in some feedback before submitting!",
+                      'mouseovers': ["Excellent", "Good", "Average", "Fair", "Poor"]}
+
+        icons = [u"😁", u"😊", u"😐", u"😞", u"😭"]
+
+        # prompt.update(self.prompts[index])
+        prompt.update({'icons': icons})
         return prompt
 
     def student_view(self, context=None):
@@ -103,7 +121,9 @@ class RatingXBlock(XBlock):
         The primary view of the RatingXBlock, shown to students
         when viewing courses.
         """
-        _ = self.runtime.service(self, 'i18n').ugettext
+        # _ = self.runtime.service(self, 'i18n').ugettext
+        language = translation.get_language()
+
         # Figure out which prompt we show. We set self.prompt_choice to
         # the index of the prompt. We set it if it is out of range (either
         # uninitiailized, or incorrect due to changing list length). Then,
@@ -118,7 +138,7 @@ class RatingXBlock(XBlock):
         scale_items = zip(prompt['mouseovers'], prompt['icons'], indexes, active_vote)
         response = ""
         if self.user_vote > -1 or self.user_freeform:
-            response = _(prompt['thankyou'])
+            response = prompt['thankyou']
 
         context = {
             'user_freeform': self.user_freeform,
@@ -127,7 +147,8 @@ class RatingXBlock(XBlock):
             'response': response,
             'rating': self.user_vote,
             'show_textarea': self.show_textarea,
-            'scale_items': scale_items
+            'scale_items': scale_items,
+            'language': language
         }
 
         # We initialize self.p_user if not initialized -- this sets whether
@@ -204,11 +225,11 @@ class RatingXBlock(XBlock):
             self.handle_rating(data)
             valid = True
 
-        _ = self.runtime.service(self, 'i18n').ugettext
+        # _ = self.runtime.service(self, 'i18n').ugettext
         if valid:
-            return {"success": True, "response": _(self.get_prompt(self.prompt_choice)['thankyou'])}
+            return {"success": True, "response": self.get_prompt(self.prompt_choice)['thankyou']}
         else:
-            return {"success": False, "response": _(self.get_prompt(self.prompt_choice)['error'])}
+            return {"success": False, "response": self.get_prompt(self.prompt_choice)['error']}
 
     # TO-DO: change this to create the scenarios you'd like to see in the
     # workbench while developing your XBlock.
