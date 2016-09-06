@@ -98,7 +98,7 @@ class RatingXBlock(XBlock):
             prompt = {'text': "S'il vous plaît nous fournir des commentaires sur cette section",
                       'rating': "S'il vous plaît noter que votre expérience avec cette section",
                       'error': "S'il vous plaît remplir quelques commentaires avant de soumettre!",
-                      'mouseovers': ["Excellent", "Bon", "Moyen", "Fair", "Mauvais"]}
+                      'mouseovers': ["Excellent", "Bon", "Moyen", "Passable", "Mauvais"]}
 
         else:
             prompt = {'text': "Please provide us feedback on this section.",
