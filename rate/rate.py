@@ -4,6 +4,7 @@ Providing feedback and rating.
 This can be put anywhere inside a course. Multiple rating at same page is also allowed.
 """
 import random
+import emot
 from xblock.core import XBlock
 from xblock.fields import Scope, Integer, String, List, Float
 from xblock.fragment import Fragment
@@ -28,9 +29,9 @@ class RatingXBlock(XBlock):
     # will default to the ones in default_prompt.
     prompts = List(
         default=[{
-            'text': "Please provide us feedback on this section",
-            'rating': "Please rate your overall experience with this section",
-            'error': "Please fill in some feedback before submitting!"
+            'text': "Por favor envianos tus comentarios sobre esta sección",
+            'rating': "Califique su experiencia general",
+            'error': "¡Por favor, llene los comentarios antes de enviar!"
         }],
         scope=Scope.settings,
         help="Input text feedback here",
