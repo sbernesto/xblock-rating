@@ -104,9 +104,9 @@ class RatingXBlock(XBlock):
             prompt = {'text': "Please provide us feedback on this section.",
                       'rating': "Please rate your overall experience with this section.",
                       'error': "Please fill in some feedback before submitting!",
-                      'mouseovers': ["Bien", "Mal", "Average", "Fair", "Poor"]}
+                      'mouseovers': ["Like", "Unlike"]}
 
-        icons = [u"👍", u"👎", u"😐", u"😞", u"😭"]
+        icons = [u"👍", u"👎"]
 
         prompt.update(self.prompts[index])
         prompt.update({'icons': icons})
