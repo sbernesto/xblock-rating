@@ -85,7 +85,7 @@ class RatingXBlock(XBlock):
     )
 
     def get_prompt(self, index):
-        """ 
+        """
         Return the current prompt dictionary, doing appropriate
         randomization if necessary, and falling back to defaults when
         necessary.
@@ -104,9 +104,9 @@ class RatingXBlock(XBlock):
             prompt = {'text': "Please provide us feedback on this section.",
                       'rating': "Please rate your overall experience with this section.",
                       'error': "Please fill in some feedback before submitting!",
-                      'mouseovers': ["Excellent", "Good", "Average", "Fair", "Poor"]}
+                      'mouseovers': ["Bien", "Mal", "Average", "Fair", "Poor"]}
 
-        icons = [u"😁", u"😊", u"😐", u"😞", u"😭"]
+        icons = [u"👍", u"👎", u"😐", u"😞", u"😭"]
 
         prompt.update(self.prompts[index])
         prompt.update({'icons': icons})
