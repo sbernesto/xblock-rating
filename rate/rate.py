@@ -104,7 +104,7 @@ class RatingXBlock(XBlock):
             prompt = {'text': "Please provide us feedback on this section.",
                       'rating': "Please rate your overall experience with this section.",
                       'error': "Please fill in some feedback before submitting!",
-                      'mouseovers': ["Like", "Unlike"]}
+                      'mouseovers': ["Like", "dislike"]}
 
         icons = [u"👍", u"👎"]
 
