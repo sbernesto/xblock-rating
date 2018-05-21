@@ -101,9 +101,9 @@ class RatingXBlock(XBlock):
                       'mouseovers': ["Excellent", "Bon", "Moyen", "Passable", "Mauvais"]}
 
         else:
-            prompt = {'text': "Please provide us feedback on this section.",
-                      'rating': "Please rate your overall experience with this section.",
-                      'error': "Please fill in some feedback before submitting!",
+            prompt = {'text': "Por favor, escribe tus comentarios sobre el curso",
+                      'rating': "Califica tu experiencia general con el curso",
+                      'error': "!Por favor, deja tus comentarios antes de enviar!",
                       'mouseovers': ["Like", "dislike"]}
 
         icons = [u"👍", u"👎"]
