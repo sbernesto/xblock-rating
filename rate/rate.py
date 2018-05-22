@@ -28,9 +28,9 @@ class RatingXBlock(XBlock):
     # will default to the ones in default_prompt.
     prompts = List(
         default=[{
-            'text': "Please provide us feedback on this section",
-            'rating': "Please rate your overall experience with this section",
-            'error': "Please fill in some feedback before submitting!"
+            'text': "Por favor, escribe tus comentarios sobre el curso",
+            'rating': "Califica tu experiencia general con el curso",
+            'error': "!Por favor, deja tus comentarios antes de enviar!"
         }],
         scope=Scope.settings,
         help="Input text feedback here",
